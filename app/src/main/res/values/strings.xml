@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Sketch It</string>
+    <string name="save">Save</string>
+    <string name="pen_colour">Pen Colour</string>
+    <string name="clear_all">Clear All</string>
+    <string name="line_width">Line Width</string>
+    <string name="set_width">Set Width</string>
+    <string name="set_color">Set Colour</string>
+    <string name="alpha">Alpha</string>
+    <string name="red">Red</string>
+    <string name="green">Green</string>
+    <string name="blue">Blue</string>
+</resources>
