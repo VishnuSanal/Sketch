@@ -9,9 +9,8 @@ import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -26,13 +25,14 @@ import phone.vishnu.sketchit.R;
 import phone.vishnu.sketchit.view.SketchView;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int PERMISSION_REQ_CODE = 222;
     private SketchView sketchView;
     private AlertDialog.Builder currentAlertDialog;
     private ImageView imageView;
     private AlertDialog widthAlertDialog, colorAlertDialog;
     private SeekBar redSeekBar, greenSeekBar, alphaSeekBar, blueSeekBar;
     private View colorView;
+
+    private ImageView colorChooser, strokeWidth, clearAll, saveAll;
 
     private SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
 
@@ -84,11 +84,47 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
         sketchView = findViewById(R.id.view);
+
+        colorChooser = findViewById(R.id.colorChooseIV);
+        strokeWidth = findViewById(R.id.strokeWidthIV);
+        clearAll = findViewById(R.id.clearAllIV);
+        saveAll = findViewById(R.id.saveIV);
+
+        colorChooser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showColorAlertDialog();
+            }
+        });
+
+        strokeWidth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showWidthAlertDialog();
+            }
+        });
+
+        clearAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sketchView.clear();
+            }
+        });
+
+        saveAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestPermission();
+            }
+        });
+
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         return super.onCreateOptionsMenu(menu);
@@ -105,12 +141,9 @@ public class MainActivity extends AppCompatActivity {
             showColorAlertDialog();
         } else if (item.getItemId() == R.id.notification_save) {
             requestPermission();
-
-        } else {
         }
-
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     void showColorAlertDialog() {
         currentAlertDialog = new AlertDialog.Builder(this);
@@ -181,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
                 if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                     Toast.makeText(MainActivity.this, "Please Accept Required Permission", Toast.LENGTH_SHORT).show();
                 }
+                int PERMISSION_REQ_CODE = 222;
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQ_CODE);
             } else {
                 AsyncTask.execute(new Runnable() {

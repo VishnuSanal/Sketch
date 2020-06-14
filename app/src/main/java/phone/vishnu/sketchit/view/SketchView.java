@@ -22,7 +22,6 @@ import java.util.HashMap;
 public class SketchView extends View {
 
     public static final float TOUCH_TOLERANCE = 2;
-
     private Bitmap bitmap;
     private Canvas bitmapCanvas;
     private Paint paintScreen;
@@ -68,9 +67,7 @@ public class SketchView extends View {
         canvas.drawBitmap(bitmap, 0, 0, paintScreen);
 
         for (int key : pathMap.keySet()) {
-
             canvas.drawPath(pathMap.get(key), paintLine);
-
         }
     }
 
@@ -145,12 +142,15 @@ public class SketchView extends View {
 
     }
 
+    public void undoDraw(){
+
+    }
+
     private void touchEnded(int pointerId) {
 
         Path path = pathMap.get(pointerId);
         bitmapCanvas.drawPath(path, paintLine);
         path.reset();
-
 
     }
 
@@ -193,12 +193,17 @@ public class SketchView extends View {
 
         try {
             FileOutputStream fOutputStream = new FileOutputStream(file);
-            BufferedOutputStream bos = new BufferedOutputStream(fOutputStream);
+            final BufferedOutputStream bos = new BufferedOutputStream(fOutputStream);
 
             if (null != previousPointMap) {
 //                TODO: Do This
 
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, bos);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, bos);
+                    }
+                });
             }
 
             fOutputStream.flush();
