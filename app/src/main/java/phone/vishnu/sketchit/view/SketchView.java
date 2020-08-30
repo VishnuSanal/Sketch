@@ -47,8 +47,6 @@ public class SketchView extends View {
         paintLine.setStrokeWidth(5);
         paintLine.setStrokeCap(Paint.Cap.ROUND);
 
-        //TODO: Check This Typo Here
-
         pathMap = new HashMap<>();
         previousPointMap = new HashMap<>();
 
@@ -212,6 +210,7 @@ public class SketchView extends View {
         } catch (Exception e) {
             e.printStackTrace();
         }
+//        getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
 
         MediaScannerConnection.scanFile(getContext(), new String[]{file}, null, null);
 

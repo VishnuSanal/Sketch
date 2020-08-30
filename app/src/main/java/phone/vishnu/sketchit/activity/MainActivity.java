@@ -1,6 +1,7 @@
 package phone.vishnu.sketchit.activity;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -21,6 +22,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.flask.colorpicker.ColorPickerView;
+import com.flask.colorpicker.builder.ColorPickerClickListener;
+import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
+
 import phone.vishnu.sketchit.R;
 import phone.vishnu.sketchit.view.SketchView;
 
@@ -28,9 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private SketchView sketchView;
     private AlertDialog.Builder currentAlertDialog;
     private ImageView imageView;
-    private AlertDialog widthAlertDialog, colorAlertDialog;
-    private SeekBar redSeekBar, greenSeekBar, alphaSeekBar, blueSeekBar;
-    private View colorView;
+    private AlertDialog widthAlertDialog;
 
     private ImageView colorChooser, strokeWidth, clearAll, saveAll;
 
@@ -50,23 +53,6 @@ public class MainActivity extends AppCompatActivity {
             bitmap.eraseColor(Color.WHITE);
             canvas.drawLine(30, 50, 370, 50, p);
             imageView.setImageBitmap(bitmap);
-
-        }
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-
-        }
-    };
-    private SeekBar.OnSeekBarChangeListener colorSeekBarChangedListener = new SeekBar.OnSeekBarChangeListener() {
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            colorView.setBackgroundColor(Color.argb(alphaSeekBar.getProgress(), redSeekBar.getProgress(), greenSeekBar.getProgress(), blueSeekBar.getProgress()));
 
         }
 
@@ -146,40 +132,22 @@ public class MainActivity extends AppCompatActivity {
     }*/
 
     void showColorAlertDialog() {
-        currentAlertDialog = new AlertDialog.Builder(this);
-
-        View view = getLayoutInflater().inflate(R.layout.color_dialog, null);
-
-        redSeekBar = view.findViewById(R.id.redSeekBar);
-        greenSeekBar = view.findViewById(R.id.greenSeekBar);
-        blueSeekBar = view.findViewById(R.id.blueSeekBar);
-        alphaSeekBar = view.findViewById(R.id.alphaSeekBar);
-
-        colorView = view.findViewById(R.id.colorView);
-        redSeekBar.setOnSeekBarChangeListener(colorSeekBarChangedListener);
-        alphaSeekBar.setOnSeekBarChangeListener(colorSeekBarChangedListener);
-        greenSeekBar.setOnSeekBarChangeListener(colorSeekBarChangedListener);
-        blueSeekBar.setOnSeekBarChangeListener(colorSeekBarChangedListener);
-
-        int color = sketchView.getDrawingColor();
-        alphaSeekBar.setProgress(Color.alpha(color));
-        redSeekBar.setProgress(Color.red(color));
-        greenSeekBar.setProgress(Color.green(color));
-        blueSeekBar.setProgress(Color.blue(color));
-
-        Button button = view.findViewById(R.id.setColorButton);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sketchView.setDrawingColor(Color.argb(alphaSeekBar.getProgress(), redSeekBar.getProgress(), greenSeekBar.getProgress(), blueSeekBar.getProgress()));
-                colorAlertDialog.dismiss();
-            }
-        });
-
-        currentAlertDialog.setView(view);
-        colorAlertDialog = currentAlertDialog.create();
-        colorAlertDialog.show();
-
+        ColorPickerDialogBuilder
+                .with(this)
+                .initialColor(Color.WHITE)
+                .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
+                .density(11)
+                .showLightnessSlider(false)
+//                .showAlphaSlider(false)
+                .setPositiveButton("O.K", new ColorPickerClickListener() {
+                    @Override
+                    public void onClick(DialogInterface d, int lastSelectedColor, Integer[] allColors) {
+                        sketchView.setDrawingColor(lastSelectedColor);
+                        d.dismiss();
+                    }
+                })
+                .build()
+                .show();
     }
 
     void showWidthAlertDialog() {
