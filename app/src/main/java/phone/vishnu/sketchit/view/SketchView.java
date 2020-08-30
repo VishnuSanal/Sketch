@@ -1,22 +1,16 @@
 package phone.vishnu.sketchit.view;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
-import android.media.MediaScannerConnection;
-import android.os.Environment;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.HashMap;
 
 public class SketchView extends View {
@@ -27,8 +21,6 @@ public class SketchView extends View {
     private Paint paintScreen;
     private Paint paintLine;
     private HashMap<Integer, Path> pathMap;
-    private int lastInt;
-    private SharedPreferences prefs = null;
     private HashMap<Integer, Point> previousPointMap;
 
     public SketchView(Context context, AttributeSet attrs) {
@@ -57,7 +49,6 @@ public class SketchView extends View {
         bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
         bitmapCanvas = new Canvas(bitmap);
         bitmap.eraseColor(Color.WHITE);
-
     }
 
     @Override
@@ -140,10 +131,6 @@ public class SketchView extends View {
 
     }
 
-    public void undoDraw(){
-
-    }
-
     private void touchEnded(int pointerId) {
 
         Path path = pathMap.get(pointerId);
@@ -175,46 +162,8 @@ public class SketchView extends View {
 
     }
 
-    public void generateNoteOnSD() {
-        File root = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "SketchIt");
-        if (!root.exists()) root.mkdirs();
-
-        prefs = getContext().getSharedPreferences("phone.vishnu.statussaver", Context.MODE_PRIVATE);
-
-        lastInt = (prefs.getInt("number", 0)) + 1;
-
-        String file = root.toString() + File.separator + "SketchIt" + lastInt + ".jpg";
-
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt("number", lastInt);
-        editor.apply();
-
-        try {
-            FileOutputStream fOutputStream = new FileOutputStream(file);
-            final BufferedOutputStream bos = new BufferedOutputStream(fOutputStream);
-
-            if (null != previousPointMap) {
-//                TODO: Do This
-
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, bos);
-                    }
-                });
-            }
-
-            fOutputStream.flush();
-            fOutputStream.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-//        getContext().sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
-
-        MediaScannerConnection.scanFile(getContext(), new String[]{file}, null, null);
-
+    public boolean isNull() {
+        return null == previousPointMap || null == pathMap;
+        //TODO: This Is Not Working
     }
-
-
 }

@@ -1,15 +1,19 @@
 package phone.vishnu.sketchit.activity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.media.MediaScannerConnection;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -26,17 +30,20 @@ import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+
 import phone.vishnu.sketchit.R;
 import phone.vishnu.sketchit.view.SketchView;
 
 public class MainActivity extends AppCompatActivity {
+
     private SketchView sketchView;
     private AlertDialog.Builder currentAlertDialog;
     private ImageView imageView;
     private AlertDialog widthAlertDialog;
-
     private ImageView colorChooser, strokeWidth, clearAll, saveAll;
-
     private SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
 
         Bitmap bitmap = Bitmap.createBitmap(400, 100, Bitmap.Config.ARGB_8888);
@@ -110,27 +117,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        if (item.getItemId() == R.id.notification_clear_all) {
-            sketchView.clear();
-        } else if (item.getItemId() == R.id.notification_line_width) {
-            showWidthAlertDialog();
-        } else if (item.getItemId() == R.id.notification_pen_color) {
-            showColorAlertDialog();
-        } else if (item.getItemId() == R.id.notification_save) {
-            requestPermission();
-        }
-        return super.onOptionsItemSelected(item);
-    }*/
-
     void showColorAlertDialog() {
         ColorPickerDialogBuilder
                 .with(this)
@@ -188,10 +174,40 @@ public class MainActivity extends AppCompatActivity {
                 AsyncTask.execute(new Runnable() {
                     @Override
                     public void run() {
-                        sketchView.generateNoteOnSD();
+
+                        if (!sketchView.isNull()) {
+
+                            File root = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "SketchIt");
+                            if (!root.exists()) root.mkdirs();
+
+                            SharedPreferences sharedPreferences = getSharedPreferences("phone.vishnu.statussaver", Context.MODE_PRIVATE);
+                            int lastInt = (sharedPreferences.getInt("number", 0)) + 1;
+                            String file = root.toString() + File.separator + "SketchIt" + lastInt + ".jpg";
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putInt("number", lastInt);
+                            editor.apply();
+
+                            Bitmap result = Bitmap.createBitmap(sketchView.getWidth(), sketchView.getHeight(), Bitmap.Config.ARGB_8888);
+                            Canvas c = new Canvas(result);
+                            sketchView.draw(c);
+
+                            try {
+                                FileOutputStream fOutputStream = new FileOutputStream(file);
+                                final BufferedOutputStream bos = new BufferedOutputStream(fOutputStream);
+
+                                result.compress(Bitmap.CompressFormat.JPEG, 90, bos);
+
+                                fOutputStream.flush();
+                                fOutputStream.close();
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            MediaScannerConnection.scanFile(MainActivity.this, new String[]{file}, null, null);
+
+                        }
                     }
                 });
-
             }
         }
     }
