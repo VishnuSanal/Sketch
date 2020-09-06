@@ -1,6 +1,7 @@
 package phone.vishnu.sketchit.activity;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -85,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 {
+                    final ProgressDialog progressDialog = ProgressDialog.show(MainActivity.this, "", "Please Wait");
+
                     if (!isPermissionGranted())
                         isPermissionGranted();
                     else {
@@ -117,11 +120,14 @@ public class MainActivity extends AppCompatActivity {
                                         fOutputStream.flush();
                                         fOutputStream.close();
 
+                                        MediaScannerConnection.scanFile(MainActivity.this, new String[]{file}, null, null);
+
+                                        progressDialog.dismiss();
+
                                     } catch (Exception e) {
                                         e.printStackTrace();
+                                        progressDialog.dismiss();
                                     }
-                                    MediaScannerConnection.scanFile(MainActivity.this, new String[]{file}, null, null);
-
                                 }
                             }
                         });
