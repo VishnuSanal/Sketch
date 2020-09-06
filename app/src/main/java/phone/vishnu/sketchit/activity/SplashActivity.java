@@ -6,8 +6,6 @@ import android.os.Handler;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.Objects;
-
 import phone.vishnu.sketchit.R;
 
 public class SplashActivity extends AppCompatActivity {
@@ -17,7 +15,6 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-//        Objects.requireNonNull(getSupportActionBar()).hide();
         int SPLASH_TIMEOUT = 1;
 
         new Handler().postDelayed(new Runnable() {
