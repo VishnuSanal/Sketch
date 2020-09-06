@@ -8,4 +8,5 @@
     <color name="iconsColor">@color/colorAccent</color>
 
     <color name="dialogBG">#80D8FF</color>
+    <color name="transparent">#00000000</color>
 </resources>
