@@ -36,53 +36,94 @@ import phone.vishnu.sketchit.view.SketchView;
 
 public class MainActivity extends AppCompatActivity {
 
+    private ImageView strokeWidthIV;
     private SketchView sketchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
+
         sketchView = findViewById(R.id.view);
+        strokeWidthIV = findViewById(R.id.strokeWidthIV);
 
-        ImageView colorChooser = findViewById(R.id.colorChooseIV);
-        final ImageView strokeWidth = findViewById(R.id.strokeWidthIV);
-        strokeWidth.setPadding((45 - 5) / 2, (45 - 5) / 2, (45 - 5) / 2, (45 - 5) / 2);
-        ImageView clearAll = findViewById(R.id.clearAllIV);
-        ImageView saveAll = findViewById(R.id.saveIV);
+        strokeWidthIV.setPadding((45 - 5) / 2, (45 - 5) / 2, (45 - 5) / 2, (45 - 5) / 2);
 
-        colorChooser.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.arrowIV).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showColorAlertDialog();
-            }
-        });
 
-        strokeWidth.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int width = sketchView.getLineWidth();
+                if (strokeWidthIV.getAlpha() == 0f) {
+                    findViewById(R.id.arrowIV).animate().rotationBy(180);
 
-                if (width >= 45) {
-                    sketchView.setLineWidth(width = 5);
-                    strokeWidth.setPadding((45 - width) / 2, (45 - width) / 2, (45 - width) / 2, (45 - width) / 2);
+                    strokeWidthIV.animate().translationXBy(-120 * 4).alpha(1f);
+                    findViewById(R.id.colorChooseIV).animate().translationXBy(-120 * 3).alpha(1f);
+                    findViewById(R.id.saveIV).animate().translationXBy(-120 * 2).alpha(1f);
+                    findViewById(R.id.clearAllIV).animate().translationXBy(-120).alpha(1f);
                 } else {
-                    sketchView.setLineWidth(width += 10);
-                    strokeWidth.setPadding(width, width, width, width);
-                    strokeWidth.setPadding((45 - width) / 2, (45 - width) / 2, (45 - width) / 2, (45 - width) / 2);
+                    findViewById(R.id.arrowIV).animate().rotationBy(180);
+
+                    strokeWidthIV.animate().translationXBy(120 * 4).alpha(0f);
+                    findViewById(R.id.colorChooseIV).animate().translationXBy(120 * 3).alpha(0f);
+                    findViewById(R.id.saveIV).animate().translationXBy(120 * 2).alpha(0f);
+                    findViewById(R.id.clearAllIV).animate().translationXBy(120).alpha(0f);
                 }
             }
         });
 
-        clearAll.setOnClickListener(new View.OnClickListener() {
+
+        findViewById(R.id.colorChooseIV).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                {
+                    ColorPickerDialogBuilder
+                            .with(MainActivity.this)
+                            .initialColor(Color.WHITE)
+                            .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
+                            .density(11)
+                            .showLightnessSlider(false)
+//                .showAlphaSlider(false)
+                            .setPositiveButton("O.K", new ColorPickerClickListener() {
+                                @Override
+                                public void onClick(DialogInterface d, int lastSelectedColor, Integer[] allColors) {
+                                    sketchView.setDrawingColor(lastSelectedColor);
+                                    d.dismiss();
+                                }
+                            })
+                            .build()
+                            .show();
+                }
+            }
+        });
+
+        strokeWidthIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                {
+                    int width = sketchView.getLineWidth();
+
+                    if (width >= 45) {
+                        sketchView.setLineWidth(width = 5);
+                        strokeWidthIV.setPadding((45 - width) / 2, (45 - width) / 2, (45 - width) / 2, (45 - width) / 2);
+                    } else {
+                        sketchView.setLineWidth(width += 10);
+                        strokeWidthIV.setPadding(width, width, width, width);
+                        strokeWidthIV.setPadding((45 - width) / 2, (45 - width) / 2, (45 - width) / 2, (45 - width) / 2);
+                    }
+                }
+            }
+        });
+
+        findViewById(R.id.clearAllIV).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sketchView.clear();
             }
         });
 
-        saveAll.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.saveIV).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 {
@@ -98,7 +139,8 @@ public class MainActivity extends AppCompatActivity {
                                 if (!sketchView.isNull()) {
 
                                     File root = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "SketchIt");
-                                    if (!root.exists()) root.mkdirs();
+                                    if (!root.exists()) //noinspection ResultOfMethodCallIgnored
+                                        root.mkdirs();
 
                                     SharedPreferences sharedPreferences = getSharedPreferences("phone.vishnu.statussaver", Context.MODE_PRIVATE);
                                     int lastInt = (sharedPreferences.getInt("number", 0)) + 1;
@@ -136,25 +178,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    void showColorAlertDialog() {
-        ColorPickerDialogBuilder
-                .with(this)
-                .initialColor(Color.WHITE)
-                .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
-                .density(11)
-                .showLightnessSlider(false)
-//                .showAlphaSlider(false)
-                .setPositiveButton("O.K", new ColorPickerClickListener() {
-                    @Override
-                    public void onClick(DialogInterface d, int lastSelectedColor, Integer[] allColors) {
-                        sketchView.setDrawingColor(lastSelectedColor);
-                        d.dismiss();
-                    }
-                })
-                .build()
-                .show();
     }
 
     private boolean isPermissionGranted() {
@@ -197,6 +220,5 @@ public class MainActivity extends AppCompatActivity {
         builder.show();
 
     }
-
 }
 

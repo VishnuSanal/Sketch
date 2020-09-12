@@ -15,55 +15,72 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+    <ImageView
+        android:id="@+id/strokeWidthIV"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        android:alpha="0"
+        android:contentDescription="Clear All"
+        android:padding="4dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_edit"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText" />
 
-        <ImageView
-            android:id="@+id/strokeWidthIV"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_margin="8dp"
-            android:contentDescription="Clear All"
-            android:padding="4dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_edit"
-            tools:ignore="HardcodedText" />
+    <ImageView
+        android:id="@+id/colorChooseIV"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        android:alpha="0"
+        android:contentDescription="Clear All"
+        android:padding="4dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_palette"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText" />
 
-        <ImageView
-            android:id="@+id/colorChooseIV"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_margin="8dp"
-            android:contentDescription="Clear All"
-            android:padding="4dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_palette"
-            tools:ignore="HardcodedText" />
+    <ImageView
+        android:id="@+id/saveIV"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        android:alpha="0"
+        android:contentDescription="Clear All"
+        android:padding="4dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_save"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText" />
 
-        <ImageView
-            android:id="@+id/saveIV"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_margin="8dp"
-            android:contentDescription="Clear All"
-            android:padding="4dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_save"
-            tools:ignore="HardcodedText" />
+    <ImageView
+        android:id="@+id/clearAllIV"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        android:alpha="0"
+        android:contentDescription="Clear All"
+        android:padding="4dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_clear_all"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText" />
 
-        <ImageView
-            android:id="@+id/clearAllIV"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_margin="8dp"
-            android:contentDescription="Clear All"
-            android:padding="4dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_clear_all"
-            tools:ignore="HardcodedText" />
-    </LinearLayout>
+    <ImageView
+        android:id="@+id/arrowIV"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        android:contentDescription="Arrow"
+        android:padding="4dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_arrow"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText" />
 </androidx.constraintlayout.widget.ConstraintLayout>
