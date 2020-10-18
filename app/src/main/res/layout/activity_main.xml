@@ -2,8 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/BGColor"
     tools:context=".activity.MainActivity">
 
     <phone.vishnu.sketchit.view.SketchView
@@ -16,17 +18,31 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
+        android:id="@+id/aboutIV"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        android:alpha="1"
+        android:contentDescription="About"
+        android:padding="4dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_info"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/strokeWidthIV"
+        tools:ignore="HardcodedText" />
+
+    <ImageView
         android:id="@+id/strokeWidthIV"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_margin="8dp"
-        android:alpha="0"
+        android:alpha="1"
         android:contentDescription="Clear All"
         android:padding="4dp"
         android:scaleType="fitXY"
         android:src="@drawable/ic_edit"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/colorChooseIV"
         tools:ignore="HardcodedText" />
 
     <ImageView
@@ -34,13 +50,13 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_margin="8dp"
-        android:alpha="0"
+        android:alpha="1"
         android:contentDescription="Clear All"
         android:padding="4dp"
         android:scaleType="fitXY"
         android:src="@drawable/ic_palette"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/saveIV"
         tools:ignore="HardcodedText" />
 
     <ImageView
@@ -48,13 +64,13 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_margin="8dp"
-        android:alpha="0"
+        android:alpha="1"
         android:contentDescription="Clear All"
         android:padding="4dp"
         android:scaleType="fitXY"
         android:src="@drawable/ic_save"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/clearAllIV"
         tools:ignore="HardcodedText" />
 
     <ImageView
@@ -62,13 +78,13 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_margin="8dp"
-        android:alpha="0"
+        android:alpha="1"
         android:contentDescription="Clear All"
         android:padding="4dp"
         android:scaleType="fitXY"
         android:src="@drawable/ic_clear_all"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/arrowIV"
         tools:ignore="HardcodedText" />
 
     <ImageView
@@ -80,7 +96,7 @@
         android:padding="4dp"
         android:scaleType="fitXY"
         android:src="@drawable/ic_arrow"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="HardcodedText" />
 </androidx.constraintlayout.widget.ConstraintLayout>

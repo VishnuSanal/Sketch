@@ -17,7 +17,9 @@ import android.os.Environment;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -32,6 +34,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 import phone.vishnu.sketchit.R;
+import phone.vishnu.sketchit.fragment.AboutFragment;
 import phone.vishnu.sketchit.view.SketchView;
 
 public class MainActivity extends AppCompatActivity {
@@ -54,10 +57,11 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.arrowIV).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+//                v.setOnClickListener(null);
                 if (strokeWidthIV.getAlpha() == 0f) {
                     findViewById(R.id.arrowIV).animate().rotationBy(180);
 
+                    findViewById(R.id.aboutIV).animate().translationXBy(-120 * 5).alpha(1f);
                     strokeWidthIV.animate().translationXBy(-120 * 4).alpha(1f);
                     findViewById(R.id.colorChooseIV).animate().translationXBy(-120 * 3).alpha(1f);
                     findViewById(R.id.saveIV).animate().translationXBy(-120 * 2).alpha(1f);
@@ -65,11 +69,13 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     findViewById(R.id.arrowIV).animate().rotationBy(180);
 
+                    findViewById(R.id.aboutIV).animate().translationXBy(120 * 5).alpha(0f);
                     strokeWidthIV.animate().translationXBy(120 * 4).alpha(0f);
                     findViewById(R.id.colorChooseIV).animate().translationXBy(120 * 3).alpha(0f);
                     findViewById(R.id.saveIV).animate().translationXBy(120 * 2).alpha(0f);
                     findViewById(R.id.clearAllIV).animate().translationXBy(120).alpha(0f);
                 }
+//                v.setOnClickListener(this);
             }
         });
 
@@ -127,79 +133,47 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 {
-                    final ProgressDialog progressDialog = ProgressDialog.show(MainActivity.this, "", "Please Wait");
-
-                    if (!isPermissionGranted())
-                        isPermissionGranted();
+                    if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+                        requestPermission();
                     else {
-                        AsyncTask.execute(new Runnable() {
-                            @Override
-                            public void run() {
-
-                                if (!sketchView.isNull()) {
-
-                                    File root = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "SketchIt");
-                                    if (!root.exists()) //noinspection ResultOfMethodCallIgnored
-                                        root.mkdirs();
-
-                                    SharedPreferences sharedPreferences = getSharedPreferences("phone.vishnu.statussaver", Context.MODE_PRIVATE);
-                                    int lastInt = (sharedPreferences.getInt("number", 0)) + 1;
-                                    String file = root.toString() + File.separator + "SketchIt" + lastInt + ".jpg";
-                                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                                    editor.putInt("number", lastInt);
-                                    editor.apply();
-
-                                    Bitmap result = Bitmap.createBitmap(sketchView.getWidth(), sketchView.getHeight(), Bitmap.Config.ARGB_8888);
-                                    Canvas c = new Canvas(result);
-                                    sketchView.draw(c);
-
-                                    try {
-                                        FileOutputStream fOutputStream = new FileOutputStream(file);
-                                        final BufferedOutputStream bos = new BufferedOutputStream(fOutputStream);
-
-                                        result.compress(Bitmap.CompressFormat.JPEG, 90, bos);
-
-                                        fOutputStream.flush();
-                                        fOutputStream.close();
-
-                                        MediaScannerConnection.scanFile(MainActivity.this, new String[]{file}, null, null);
-
-                                        progressDialog.dismiss();
-
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                        progressDialog.dismiss();
-                                    }
-                                }
-                            }
-                        });
+                        if (!sketchView.isNull())
+                            new SaveAsyncTask().execute();
+                        else
+                            Toast.makeText(MainActivity.this, "Nothing  to Save", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
         });
 
-    }
-
-    private boolean isPermissionGranted() {
-        if (Build.VERSION.SDK_INT >= 22) {
-            if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    showPermissionDeniedDialog();
-                } else {
-                    int PERMISSION_REQ_CODE = 2;
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQ_CODE);
-                }
-            } else {
-                return true;
+        findViewById(R.id.aboutIV).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getSupportFragmentManager().beginTransaction().add(R.id.constraintLayout, AboutFragment.newInstance()).addToBackStack(null).commit();
             }
-        }
-        return false;
+        });
     }
 
-    private void showPermissionDeniedDialog() {
+    private void requestPermission() {
+        if (Build.VERSION.SDK_INT >= 22) {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        }
+    }
 
-        final AlertDialog.Builder builder =
-                new AlertDialog.Builder(this);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 1 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (!sketchView.isNull())
+                new SaveAsyncTask().execute();
+            else
+                Toast.makeText(MainActivity.this, "Nothing  to Save", Toast.LENGTH_SHORT).show();
+        } else {
+            showPermissionDeniedDialog(permissions[0], requestCode);
+        }
+    }
+
+    private void showPermissionDeniedDialog(final String PERMISSION, final int REQ_CODE) {
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Permission Denied");
         builder.setMessage("Please Accept Permission");
         builder.setCancelable(true);
@@ -207,8 +181,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
-                int PERMISSION_REQ_CODE = 2;
-                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQ_CODE);
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{PERMISSION}, REQ_CODE);
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -220,5 +193,69 @@ public class MainActivity extends AppCompatActivity {
         builder.show();
 
     }
-}
 
+    private class SaveAsyncTask extends AsyncTask<String, Integer, Boolean> {
+
+        ProgressDialog p;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            p = new ProgressDialog(MainActivity.this);
+            p.setMessage("Please wait...");
+            p.setIndeterminate(false);
+            p.setCancelable(false);
+            p.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            File root = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "SketchIt");
+            if (!root.exists()) //noinspection ResultOfMethodCallIgnored
+                root.mkdirs();
+
+            SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(), Context.MODE_PRIVATE);
+            int lastInt = (sharedPreferences.getInt("number", 0)) + 1;
+
+            String file = root.toString() + File.separator + "SketchIt" + lastInt + ".jpg";
+
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt("number", lastInt);
+            editor.apply();
+
+            Bitmap result = Bitmap.createBitmap(sketchView.getWidth(), sketchView.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas c = new Canvas(result);
+            sketchView.draw(c);
+
+            try {
+                FileOutputStream fOutputStream = new FileOutputStream(file);
+                final BufferedOutputStream bos = new BufferedOutputStream(fOutputStream);
+
+                result.compress(Bitmap.CompressFormat.JPEG, 90, bos);
+
+                fOutputStream.flush();
+                fOutputStream.close();
+
+                MediaScannerConnection.scanFile(MainActivity.this, new String[]{file}, null, null);
+                return true;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean saveCompleted) {
+            super.onPostExecute(saveCompleted);
+
+            if (saveCompleted)
+                Toast.makeText(MainActivity.this, "Saved", Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
+
+            p.dismiss();
+        }
+    }
+
+}

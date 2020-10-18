@@ -163,7 +163,7 @@ public class SketchView extends View {
     }
 
     public boolean isNull() {
-        return null == previousPointMap || null == pathMap;
+        return pathMap.size() == 0 || null == previousPointMap;
         //TODO: This Is Not Working
     }
 }
