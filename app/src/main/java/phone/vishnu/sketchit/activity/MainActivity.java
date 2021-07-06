@@ -34,7 +34,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 import phone.vishnu.sketchit.R;
-import phone.vishnu.sketchit.fragment.AboutFragment;
 import phone.vishnu.sketchit.view.SketchView;
 
 public class MainActivity extends AppCompatActivity {
@@ -61,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
                 if (strokeWidthIV.getAlpha() == 0f) {
                     findViewById(R.id.arrowIV).animate().rotationBy(180);
 
-                    findViewById(R.id.aboutIV).animate().translationXBy(-120 * 5).alpha(1f);
                     strokeWidthIV.animate().translationXBy(-120 * 4).alpha(1f);
                     findViewById(R.id.colorChooseIV).animate().translationXBy(-120 * 3).alpha(1f);
                     findViewById(R.id.saveIV).animate().translationXBy(-120 * 2).alpha(1f);
@@ -69,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     findViewById(R.id.arrowIV).animate().rotationBy(180);
 
-                    findViewById(R.id.aboutIV).animate().translationXBy(120 * 5).alpha(0f);
                     strokeWidthIV.animate().translationXBy(120 * 4).alpha(0f);
                     findViewById(R.id.colorChooseIV).animate().translationXBy(120 * 3).alpha(0f);
                     findViewById(R.id.saveIV).animate().translationXBy(120 * 2).alpha(0f);
@@ -142,13 +139,6 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, "Nothing  to Save", Toast.LENGTH_SHORT).show();
                     }
                 }
-            }
-        });
-
-        findViewById(R.id.aboutIV).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getSupportFragmentManager().beginTransaction().add(R.id.constraintLayout, AboutFragment.newInstance()).addToBackStack(null).commit();
             }
         });
     }
@@ -257,5 +247,4 @@ public class MainActivity extends AppCompatActivity {
             p.dismiss();
         }
     }
-
 }
